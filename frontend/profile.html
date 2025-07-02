@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 校园场馆预约平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <style>
+        .calendar-container {
+            margin-bottom: 2rem;
+        }
+        .calendar {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .calendar-header button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+        .calendar-weekdays {
+            display: contents;
+            font-weight: bold;
+            text-align: center;
+        }
+        .calendar-weekdays div {
+            padding: 0.5rem;
+        }
+        .calendar-days {
+            display: contents;
+        }
+        .calendar-day {
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .calendar-day:hover {
+            background: #f0f0f0;
+        }
+        .calendar-day.selected {
+            background: #3498db;
+            color: white;
+        }
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+
+        /* Toast通知样式 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="profile-page">
+    <img src="4.png" alt="系统Logo" class="logo">
+    <div class="user-avatar" id="userAvatar"></div>
+    <div class="user-dropdown" id="userDropdown">
+        <a href="profile.html">个人中心</a>
+        <a href="#" id="logoutBtn">退出登录</a>
+    </div>
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <a href="reservate.html" class="back-link">&larr; 返回场馆选择</a>
+            <div class="profile-avatar-container">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                <button class="btn upload-btn" onclick="document.getElementById('avatarUpload').click()">上传头像</button>
+            </div>
+            <h1>个人中心</h1>
+        </div>
+        
+        <div class="profile-sections">
+            <div class="profile-section">
+                <h2>个人信息</h2>
+                <button id="editProfileBtn" class="btn edit-btn">信息修改</button>
+                <form id="profileForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="studentId">学号</label>
+                        <input type="text" class="form-control" id="studentId" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">保存修改</button>
+                </form>
+            </div>
+            
+            <div class="profile-section">
+                <h2>预约记录</h2>
+                <div class="calendar-container">
+                    <h3>选择日期</h3>
+                    <div id="calendar-widget"></div>
+                </div>
+                <div id="booking-records">
+                    <h3>预约详情</h3>
+                    <div class="booking-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast通知 -->
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        // Mock data for local testing
+        const mockProfile = {
+            username: "测试用户",
+            studentId: "20230001"
+        };
+        const mockBookings = [
+            {
+                venue: "羽毛球馆",
+                date: "2025-07-01",
+                time: "14:00:00",
+                status: "已确认"
+            },
+            {
+                venue: "健身房",
+                date: "2025-07-03",
+                time: "16:00:00",
+                status: "已确认"
+            }
+        ];
+
+        // Load mock profile data
+        document.getElementById('username').value = mockProfile.username;
+        document.getElementById('studentId').value = mockProfile.studentId;
+        document.getElementById('profileAvatar').textContent = 
+            mockProfile.username.charAt(0).toUpperCase();
+
+        // Toast通知函数
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 日历相关变量
+        let currentDate = new Date();
+        
+        // 初始化日历
+        function initCalendar() {
+            const calendarContainer = document.getElementById('calendar-widget');
+            calendarContainer.innerHTML = '<div class="calendar-placeholder">日历加载中...</div>';
+            
+            setTimeout(() => {
+                renderCalendar(currentDate);
+            }, 500);
+        }
+        
+        // 渲染日历
+        function renderCalendar(date) {
+            const calendarContainer = document.getElementById('calendar-widget');
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            // 获取当月第一天和最后一天
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            
+            // 创建日历HTML
+            let calendarHTML = `
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <button id="prev-month"><</button>
+                        <h3>${year}年${month + 1}月</h3>
+                        <button id="next-month">></button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-weekdays">
+                            <div>日</div>
+                            <div>一</div>
+                            <div>二</div>
+                            <div>三</div>
+                            <div>四</div>
+                            <div>五</div>
+                            <div>六</div>
+                        </div>
+                        <div class="calendar-days"></div>
+                    </div>
+                </div>
+            `;
+            
+            calendarContainer.innerHTML = calendarHTML;
+            
+            // 填充日期
+            const daysContainer = document.querySelector('.calendar-days');
+            let dayCounter = 1;
+            
+            // 创建日期格子
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 7; j++) {
+                    const dayDiv = document.createElement('div');
+                    
+                    if (i === 0 && j < firstDay.getDay()) {
+                        // 上个月的日期
+                        dayDiv.className = 'calendar-day other-month';
+                    } else if (dayCounter > lastDay.getDate()) {
+                        // 下个月的日期
+                        dayDiv.className = 'calendar-day other-month';
+                    } else {
+                        // 当前月的日期
+                        dayDiv.className = 'calendar-day';
+                        dayDiv.textContent = dayCounter;
+                        dayDiv.addEventListener('click', function() {
+                            selectDate(dayCounter);
+                        });
+                        dayCounter++;
+                    }
+                    
+                    daysContainer.appendChild(dayDiv);
+                }
+            }
+            
+            // 添加月份切换事件
+            document.getElementById('prev-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar(currentDate);
+            });
+            
+            document.getElementById('next-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar(currentDate);
+            });
+        }
+        
+        // 选择日期
+        function selectDate(day) {
+            const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            const dateStr = selectedDate.toISOString().split('T')[0];
+            filterBookingsByDate(dateStr);
+            
+            // 移除之前的选择
+            document.querySelectorAll('.calendar-day').forEach(dayEl => {
+                dayEl.classList.remove('selected');
+            });
+            
+            // 标记当前选择
+            event.target.classList.add('selected');
+        }
+
+        function filterBookingsByDate(date) {
+            const filtered = mockBookings.filter(booking => booking.date === date);
+            const bookingList = document.querySelector('.booking-list');
+            bookingList.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                bookingList.innerHTML = '<p class="empty-state">该日期无预约记录</p>';
+                return;
+            }
+            
+            filtered.forEach(booking => {
+                const record = document.createElement('div');
+                record.className = 'booking-record';
+                record.innerHTML = `
+                    <p><strong>场馆:</strong> ${booking.venue}</p>
+                    <p><strong>时间:</strong> ${booking.time}</p>
+                    <p><strong>状态:</strong> ${booking.status}</p>
+                `;
+                bookingList.appendChild(record);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            const newUsername = document.getElementById('username').value;
+            localStorage.setItem('username', newUsername);
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'username',
+                newValue: newUsername
+            }));
+
+            e.preventDefault();
+            alert('修改成功 (本地测试)');
+        });
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            localStorage.clear();
+            window.location.href = 'index.html';
+        });
+
+        // Avatar dropdown functionality
+        const avatar = document.getElementById('userAvatar');
+        const dropdown = document.getElementById('userDropdown');
+
+        avatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function() {
+            dropdown.style.display = 'none';
+        });
+
+        // Initialize components
+        document.addEventListener('DOMContentLoaded', () => {
+            initCalendar();
+            document.querySelector('.booking-list').innerHTML = 
+                '<p class="empty-state">请点击日历选择日期查看预约记录</p>';
+            
+            // 信息修改按钮点击事件
+            document.getElementById('editProfileBtn').addEventListener('click', function() {
+                const form = document.getElementById('profileForm');
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                this.textContent = form.style.display === 'none' ? '信息修改' : '取消修改';
+            });
+
+            // 头像上传处理
+            document.getElementById('avatarUpload').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        // 更新个人中心头像
+                        const profileAvatar = document.getElementById('profileAvatar');
+                        profileAvatar.style.backgroundImage = `url(${event.target.result})`;
+                        profileAvatar.textContent = '';
+                        
+                        // 更新右上角头像
+                        const userAvatar = document.getElementById('userAvatar');
+                        if (userAvatar) {
+                            userAvatar.style.backgroundImage = `url(${event.target.result})`;
+                        }
+                        
+                        // 本地存储头像
+                        localStorage.setItem('userAvatar', event.target.result);
+                        
+                        // 显示成功提示
+                        showToast('头像修改成功');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // 加载存储的头像
+            const savedAvatar = localStorage.getItem('userAvatar');
+            if (savedAvatar) {
+                // 更新个人中心头像
+                const profileAvatar = document.getElementById('profileAvatar');
+                profileAvatar.style.backgroundImage = `url(${savedAvatar})`;
+                profileAvatar.textContent = '';
+                
+                // 更新右上角头像
+                const userAvatar = document.getElementById('userAvatar');
+                if (userAvatar) {
+                    userAvatar.style.backgroundImage = `url(${savedAvatar})`;
+                }
+            }
+
+            // 监听头像更新事件
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'userAvatar' && e.newValue) {
+                    const profileAvatar = document.getElementById('profileAvatar');
+                    if (profileAvatar) {
+                        profileAvatar.style.backgroundImage = `url(${e.newValue})`;
+                        profileAvatar.textContent = '';
+                    }
+                    
+                    const userAvatar = document.getElementById('userAvatar');
+                    if (userAvatar) {
+                        userAvatar.style.backgroundImage = `url(${e.newValue})`;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

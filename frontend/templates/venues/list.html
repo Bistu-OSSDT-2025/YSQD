@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}场馆列表 - 校园场馆预约平台{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">可用场馆</h2>
+
+<div class="venue-list-container">
+  <!-- 场馆列表将通过JS动态加载 -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="/js/venues.js"></script>
+{% endblock %}

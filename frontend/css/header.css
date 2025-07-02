@@ -1,0 +1,85 @@
+/* Header styles */
+/* Header容器样式 */
+.header-container {
+    position: absolute; /* 固定定位 */
+    top: 20px; /* 距离顶部20px */
+    left: 30px; /* 距离左侧30px */
+    z-index: 1000; /* 确保在其他元素之上 */
+    display: flex;  /*使用flex布局 */
+    /*align-items: normal;  垂直居中对齐 */
+    gap: 15px; /* 元素之间的间距 */
+}
+
+/* 系统Logo样式 */
+.logo {
+    height: auto; /* 设置高度 */
+    width: auto; /* 宽度自适应保持比例 */
+    object-fit: contain; /* 图像缩放以适应容器 */
+}
+
+/* 系统名称样式 */
+.system-name {
+    font-size: 1.7rem; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    color: white; /* 白色文字 */
+    text-shadow: 0 0 3px rgba(0,0,0,0.7); /* 文字阴影增强可读性 */
+    white-space: nowrap; /* 防止文字换行 */
+    height:30%;
+    width:80%;
+}
+
+/* 用户欢迎信息样式 */
+.user-greeting {
+    font-size: 1.5rem; /* 字号与欢迎信息匹配 */
+    color: #333; /* 深灰色文字 */
+    font-weight: bold; /* 加粗字体 */
+    text-shadow: none; /* 移除文字阴影以获得更好对比度 */
+    margin-top: 10px; /* 上边距 */
+    text-align: center; /* 居中对齐 */
+    width: 100%; /* 占据全宽以实现正确居中 */
+}
+
+/* 用户头像样式 */
+.user-avatar {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 1001;
+    background-size: cover;
+    background-position: center;
+}
+
+/* 用户下拉菜单样式 */
+.user-dropdown {
+    position: absolute;
+    top: 80px;
+    right: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 1rem;
+    display: none;
+    z-index: 1001;
+    min-width: 150px;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 0.5rem 0;
+    color: #333;
+    text-decoration: none;
+}
+
+.user-dropdown a:hover {
+    color: #4361ee;
+}

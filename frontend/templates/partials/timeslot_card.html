@@ -1,0 +1,22 @@
+<div class="col-12 col-sm-6 col-md-4 col-lg-3">
+  <div class="card time-slot-card h-100 
+      {% if status == 'available' %}border-success{% elif status == 'booked' %}border-danger{% else %}border-secondary{% endif %}">
+    <div class="card-body text-center">
+      <h5 class="card-title">{{ start }} - {{ end }}</h5>
+      <span class="badge 
+          {% if status == 'available' %}bg-success{% elif status == 'booked' %}bg-danger{% else %}bg-secondary{% endif %}">
+        {{ "可预约" if status == "available" else "已约满" if status == "booked" else "不可用" }}
+      </span>
+      
+      {% if status == 'available' %}
+      <button class="btn btn-sm btn-primary mt-2 w-100"
+              data-bs-toggle="modal"
+              data-bs-target="#bookingModal"
+              data-start="{{ start }}"
+              data-end="{{ end }}">
+        立即预约
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</div>

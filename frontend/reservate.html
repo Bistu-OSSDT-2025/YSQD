@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>场馆预约 - 校园场馆预约平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/header.css">
+    <style>
+        body {
+            position: relative;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('223.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            filter: blur(5px);
+            z-index: -1;
+        }
+        .logo {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            height: 60px;
+            width: auto;
+        }
+
+        .user-avatar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            background-color: #3498db;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 100;
+        }
+        .user-dropdown a {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+        }
+        .user-dropdown a:hover {
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            width: 90%;
+            padding: 2rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .welcome-message {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+.venues-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 10rem; /* 进一步增加场馆间距 */
+}
+        
+        .venue-card {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+            height: 100%;
+        }
+        
+        .venue-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+        
+        .venue-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+        
+        .venue-content h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            flex-shrink: 0;
+        }
+        
+        .venue-content p {
+            color: #7f8c8d;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+        
+        .btn-book {
+            margin-top: auto;
+            flex-shrink: 0;
+        }
+        
+        .venue-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .btn-book {
+            margin-top: auto;
+        }
+        .venue-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 350px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .venues-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+        .venue-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .venue-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+        .badminton {
+            background-image: url('images/badminton.jpg');
+        }
+        .gym {
+            background-image: url('images/gym.jpg');
+        }
+        .venue-content {
+            padding: 1.5rem;
+        }
+        .venue-content h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .venue-content p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+        .btn-book {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-book:hover {
+            background-color: #2980b9;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+   
+<div class="user-avatar" id="userAvatar"></div>
+<div class="user-dropdown" id="userDropdown">
+    <a href="profile.html">个人中心</a>
+    <a href="index.html">退出登录</a>
+</div>
+
+<div class="container">
+    
+<div class="welcome-message">
+    <div id="user-greeting" class="user-greeting"></div>
+    <p>请选择您要预约的场馆类型</p>
+</div>
+    <div class="venues-container">
+        <div class="venue-card" onclick="location.href='badminton.html'">
+            <div class="venue-image badminton"></div>
+            <div class="venue-content">
+                <h3>羽毛球馆预约</h3>
+                <p>预约校内专业羽毛球场馆，选择合适的时间段进行运动</p>
+                <button class="btn-book">立即预约</button>
+            </div>
+        </div>
+        
+        <div class="venue-card" onclick="location.href='gym.html'">
+            <div class="venue-image gym"></div>
+            <div class="venue-content">
+                <h3>健身房预约</h3>
+                <p>预约校内健身房，使用专业健身器材进行锻炼</p>
+                <button class="btn-book">立即预约</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        const avatar = document.getElementById('userAvatar');
+        const dropdown = document.getElementById('userDropdown');
+
+        avatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // API endpoints
+        const API_BASE = '/api/v1';
+        const BADMINTON_API = `${API_BASE}/badminton`;
+        const GYM_API = `${API_BASE}/gym`;
+
+        // Add loading state to buttons
+        document.querySelectorAll('.btn-book').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const originalText = this.textContent;
+                this.innerHTML = `<span class="spinner"></span> 加载中...`;
+                this.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.disabled = false;
+                    window.location.href = this.closest('.venue-card').onclick.toString().match(/location\.href='([^']+)'/)[1];
+                }, 1000);
+            });
+        });
+        
+        // Greeting functionality with actual username
+        const savedUsername = localStorage.getItem('username');
+        if (savedUsername) {
+            document.getElementById('user-greeting').textContent = `hi, ${savedUsername}`;
+            document.getElementById('user-greeting').style.fontSize = '1.5rem';
+            document.getElementById('user-greeting').style.color = '#333';
+            document.getElementById('user-greeting').style.fontWeight = 'bold';
+        }
+        
+        // Update username if changed in profile
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'username' && e.newValue) {
+                document.getElementById('user-greeting').textContent = `hi, ${e.newValue}`;
+            }
+        });
+</script>
+<script src="js/script.js"></script>
+<script src="js/header.js"></script>
+</body>
+</html>

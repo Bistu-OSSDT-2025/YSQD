@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 校园场馆预约平台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            position: relative;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('223.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            filter: blur(5px);
+            z-index: -1;
+        }
+        .logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            height: 60px;
+            width: auto;
+        }
+        .register-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box; /* Ensure padding is included in width */
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Ensure padding is included in width */
+        }
+        
+        /* Add responsive padding to form container */
+        .register-container {
+            padding: 1.5rem; /* Reduced padding */
+        }
+        
+        /* Adjust form group spacing */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        /* Add responsive design for small screens */
+        @media (max-width: 576px) {
+            .register-container {
+                padding: 1rem;
+            }
+            .form-control {
+                padding: 0.5rem;
+            }
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .form-control {
+            padding: 0.75rem;
+        }
+        .btn-primary {
+            padding: 0.75rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <img src="4.png" alt="系统Logo" class="logo">
+    
+    <div class="register-container">
+        <h1 class="text-center">用户注册</h1>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="regUsername">用户名:</label>
+                <input type="text" class="form-control" id="regUsername" name="regUsername" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="regPassword">密码:</label>
+                <input type="password" class="form-control" id="regPassword" name="regPassword" required autocomplete="new-password">
+            </div>
+            
+            <div class="form-group">
+                <label for="confirmPassword">确认密码:</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required autocomplete="new-password">
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">手机号:</label>
+                <input type="tel" class="form-control" id="phone" name="phone" pattern="\d{11}" required placeholder="11位手机号码">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">注册</button>
+            
+            <div class="login-link text-center mt-3">
+                已有账号? <a href="index.html" class="login-btn">立即登录</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
