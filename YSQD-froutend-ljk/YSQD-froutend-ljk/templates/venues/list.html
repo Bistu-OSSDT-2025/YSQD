@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}场馆列表 - 校园场馆预约平台{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">可用场馆</h2>
+
+<div class="row">
+  {% for venue in venues %}
+  <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card h-100">
+      <img src="{{ venue.image }}" class="card-img-top" alt="{{ venue.name }}">
+      <div class="card-body">
+        <h5 class="card-title">{{ venue.name }}</h5>
+        <p class="card-text">
+          <span class="badge bg-info">容量: {{ venue.capacity }}人</span>
+          <span class="badge bg-success ms-2">开放中</span>
+        </p>
+        <a href="/venues/{{ venue.id }}" class="btn btn-primary">查看档期</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
