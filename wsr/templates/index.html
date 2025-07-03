@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>校园体育场馆预约系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#00B42A',
+            warning: '#FF7D00',
+            danger: '#F53F3F',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .transition-custom {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="font-inter bg-light text-dark min-h-screen flex flex-col">
+  <!-- 导航栏 -->
+  <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-futbol-o text-primary text-2xl"></i>
+        <span class="text-xl font-bold text-primary">校园体育场馆预约</span>
+      </div>
+      
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="#home" class="font-medium hover:text-primary transition-custom">首页</a>
+        <a href="#facilities" class="font-medium hover:text-primary transition-custom">场馆列表</a>
+        <a href="#booking" class="font-medium hover:text-primary transition-custom">我要预约</a>
+        <a href="#my-bookings" class="font-medium hover:text-primary transition-custom">我的预约</a>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <button id="loginBtn" class="hidden md:block px-4 py-2 rounded-md border border-primary text-primary hover:bg-primary/5 transition-custom">
+          登录
+        </button>
+        <button id="registerBtn" class="hidden md:block px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 transition-custom">
+          注册
+        </button>
+        <div id="userMenu" class="hidden items-center space-x-3">
+          <span id="username" class="font-medium"></span>
+          <div class="relative">
+            <button id="profileBtn" class="flex items-center space-x-1">
+              <i class="fa fa-user-circle-o text-lg"></i>
+              <i class="fa fa-angle-down"></i>
+            </button>
+            <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden z-50">
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-custom">个人信息</a>
+              <a href="#" class="block px-4 py-2 hover:bg-gray-100 transition-custom">我的预约</a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a href="#" id="logoutBtn" class="block px-4 py-2 hover:bg-gray-100 transition-custom">退出登录</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-dark hover:text-primary transition-custom">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 移动端菜单 -->
+    <div id="mobileMenu" class="md:hidden hidden bg-white border-t border-gray-100">
+      <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+        <a href="#home" class="py-2 font-medium hover:text-primary transition-custom">首页</a>
+        <a href="#facilities" class="py-2 font-medium hover:text-primary transition-custom">场馆列表</a>
+        <a href="#booking" class="py-2 font-medium hover:text-primary transition-custom">我要预约</a>
+        <a href="#my-bookings" class="py-2 font-medium hover:text-primary transition-custom">我的预约</a>
+        <div class="flex space-x-4 pt-2">
+          <button id="mobileLoginBtn" class="flex-1 px-4 py-2 rounded-md border border-primary text-primary hover:bg-primary/5 transition-custom">
+            登录
+          </button>
+          <button id="mobileRegisterBtn" class="flex-1 px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 transition-custom">
+            注册
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 登录模态框 -->
+  <div id="loginModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="loginModalContent">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold">用户登录</h3>
+          <button id="closeLoginModal" class="text-gray-400 hover:text-gray-600">
+            <i class="fa fa-times text-xl"></i>
+          </button>
+        </div>
+        <form id="loginForm" class="space-y-4">
+          <div>
+            <label for="loginUsername" class="block text-sm font-medium text-gray-700 mb-1">用户名</label>
+            <input type="text" id="loginUsername" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请输入用户名">
+          </div>
+          <div>
+            <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+            <input type="password" id="loginPassword" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请输入密码">
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input type="checkbox" id="rememberMe" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+              <label for="rememberMe" class="ml-2 block text-sm text-gray-700">记住我</label>
+            </div>
+            <a href="#" class="text-sm text-primary hover:text-primary/80">忘记密码?</a>
+          </div>
+          <button type="submit" class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom">登录</button>
+        </form>
+        <div class="mt-4 text-center">
+          <span class="text-sm text-gray-600">还没有账号?</span>
+          <button id="gotoRegisterBtn" class="text-sm text-primary hover:text-primary/80 font-medium">立即注册</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注册模态框 -->
+  <div id="registerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="registerModalContent">
+      <div class="p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold">用户注册</h3>
+          <button id="closeRegisterModal" class="text-gray-400 hover:text-gray-600">
+            <i class="fa fa-times text-xl"></i>
+          </button>
+        </div>
+        <form id="registerForm" class="space-y-4">
+          <div>
+            <label for="registerUsername" class="block text-sm font-medium text-gray-700 mb-1">用户名</label>
+            <input type="text" id="registerUsername" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请输入用户名">
+          </div>
+          <div>
+            <label for="registerName" class="block text-sm font-medium text-gray-700 mb-1">姓名</label>
+            <input type="text" id="registerName" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请输入姓名">
+          </div>
+          <div>
+            <label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-1">邮箱</label>
+            <input type="email" id="registerEmail" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请输入邮箱">
+          </div>
+          <div>
+            <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+            <input type="password" id="registerPassword" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请输入密码">
+          </div>
+          <div>
+            <label for="registerConfirmPassword" class="block text-sm font-medium text-gray-700 mb-1">确认密码</label>
+            <input type="password" id="registerConfirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom" placeholder="请再次输入密码">
+          </div>
+          <button type="submit" class="w-full py-2 px-4 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom">注册</button>
+        </form>
+        <div class="mt-4 text-center">
+          <span class="text-sm text-gray-600">已有账号?</span>
+          <button id="gotoLoginBtn" class="text-sm text-primary hover:text-primary/80 font-medium">立即登录</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 首页 -->
+  <section id="home" class="pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-br from-primary/5 to-primary/10">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 mb-10 md:mb-0">
+          <h1 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-dark mb-6">
+            便捷的<span class="text-primary">体育场馆</span><br>预约平台
+          </h1>
+          <p class="text-gray-600 text-lg mb-8 max-w-lg">
+            轻松预约羽毛球馆、健身房和乒乓球馆，按小时计费，让运动更加便捷高效。
+          </p>
+          <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+            <a href="#booking" class="px-8 py-3 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom text-center shadow-lg shadow-primary/20">
+              立即预约
+            </a>
+            <a href="#facilities" class="px-8 py-3 border border-primary text-primary rounded-md hover:bg-primary/5 transition-custom text-center">
+              查看场馆
+            </a>
+          </div>
+        </div>
+        <div class="md:w-1/2">
+          <div class="relative">
+            <img src="/static/images/sports.jpg" alt="体育场馆" class="w-full h-auto rounded-xl shadow-xl">
+            <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg">
+              <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <i class="fa fa-check text-primary text-xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-500">可用场馆</p>
+                  <p class="text-xl font-bold">3</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 统计数据 -->
+  <section class="py-12 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-2 md:grid-cols-2 gap-6">
+        <div class="bg-light rounded-xl p-6 text-center transition-custom hover:shadow-lg">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa fa-building-o text-primary text-2xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold mb-2" id="stats-facilities">3</h3>
+          <p class="text-gray-600">可用场馆</p>
+        </div>
+        <div class="bg-light rounded-xl p-6 text-center transition-custom hover:shadow-lg">
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa fa-star-o text-primary text-2xl"></i>
+          </div>
+          <h3 class="text-3xl font-bold mb-2" id="stats-rating">4.9</h3>
+          <p class="text-gray-600">用户评分</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 场馆列表 -->
+  <section id="facilities" class="py-16 bg-light">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">场馆列表</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">选择适合你的运动场馆，享受高品质的运动体验</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- 羽毛球馆 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-custom group">
+          <div class="relative h-64 overflow-hidden">
+            <img src="/static/images/badminton.jpg" alt="羽毛球馆" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded-full text-sm font-medium">
+              羽毛球馆
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">羽毛球馆 A</h3>
+            <p class="text-gray-600 mb-4">专业羽毛球场地，提供优质羽毛球和球拍租赁服务</p>
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-primary font-bold">
+                <span class="text-2xl">¥35</span>
+                <span class="text-gray-500">/小时</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-star text-warning"></i>
+                <span class="ml-1">4.9</span>
+              </div>
+            </div>
+            <button class="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom book-facility-btn" data-id="1">
+              立即预约
+            </button>
+          </div>
+        </div>
+        
+        <!-- 健身房 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-custom group">
+          <div class="relative h-64 overflow-hidden">
+            <img src="/static/images/gym.jpg" alt="健身房" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute top-4 left-4 bg-secondary text-white px-3 py-1 rounded-full text-sm font-medium">
+              健身房
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">健身房 B</h3>
+            <p class="text-gray-600 mb-4">设备齐全的健身房，提供专业教练指导服务</p>
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-primary font-bold">
+                <span class="text-2xl">¥45</span>
+                <span class="text-gray-500">/小时</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-star text-warning"></i>
+                <span class="ml-1">4.8</span>
+              </div>
+            </div>
+            <button class="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom book-facility-btn" data-id="2">
+              立即预约
+            </button>
+          </div>
+        </div>
+        
+        <!-- 乒乓球馆 -->
+        <div class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-custom group">
+          <div class="relative h-64 overflow-hidden">
+            <img src="/static/images/table_tennis.jpg" alt="乒乓球馆" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute top-4 left-4 bg-warning text-white px-3 py-1 rounded-full text-sm font-medium">
+              乒乓球馆
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">乒乓球馆 C</h3>
+            <p class="text-gray-600 mb-4">标准乒乓球场地，提供多种级别乒乓球拍租赁</p>
+            <div class="flex items-center justify-between mb-4">
+              <div class="text-primary font-bold">
+                <span class="text-2xl">¥25</span>
+                <span class="text-gray-500">/小时</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-star text-warning"></i>
+                <span class="ml-1">4.7</span>
+              </div>
+            </div>
+            <button class="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom book-facility-btn" data-id="3">
+              立即预约
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 预约系统 -->
+  <section id="booking" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">我要预约</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">选择场地和日期，预约您的运动时间</p>
+      </div>
+      
+      <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="md:col-span-1">
+            <div class="sticky top-24">
+              <h3 class="text-xl font-bold mb-4">预约信息</h3>
+              
+              <div class="bg-light rounded-lg p-4 mb-6">
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">选择场馆</label>
+                  <select id="booking-facility" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+                    <option value="">请选择场馆</option>
+                    <option value="1">羽毛球馆 A</option>
+                    <option value="2">健身房 B</option>
+                    <option value="3">乒乓球馆 C</option>
+                  </select>
+                </div>
+                
+                <div class="mb-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">选择日期</label>
+                  <input type="date" id="booking-date" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-custom">
+                </div>
+                
+                <button id="check-availability" class="w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-custom">
+                  查看可用时间
+                </button>
+              </div>
+              
+              <div id="booking-summary" class="hidden bg-light rounded-lg p-4">
+                <h4 class="font-medium mb-3">预约详情</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class
