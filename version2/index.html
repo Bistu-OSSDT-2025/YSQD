@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体育馆预约系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .login-container {
+            display: none;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .login-form {
+            margin-bottom: 2rem;
+        }
+
+        .auth-section {
+            margin-bottom: 2rem;
+        }
+
+        .auth-section h2 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin-left: 1rem;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            color: white;
+        }
+
+        .navbar h1 {
+            margin-left: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .facilities-carousel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .facility-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .facility-card h3 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        .facility-card p {
+            color: #666;
+        }
+
+        .booking-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .navbar h1 {
+                margin-left: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>体育馆预约系统</h1>
+        <a href="#" class="nav-link" onclick="showLogin()">登录</a>
+        <a href="#" class="nav-link" onclick="showRegister()">注册</a>
+    </nav>
+
+    <div class="login-container" id="loginContainer">
+        <div class="auth-section" id="loginSection">
+            <h2>用户登录</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn" onclick="login()">登录</button>
+            </form>
+        </div>
+
+        <div class="auth-section" id="registerSection" style="display: none;">
+            <h2>用户注册</h2>
+            <form class="login-form" id="registerForm">
+                <div class="form-group">
+                    <label for="newUsername">用户名:</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">密码:</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码:</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn" onclick="register()">注册</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="facilities-carousel">
+            <h2>可用设施</h2>
+            <div class="facility-card">
+                <h3>篮球场</h3>
+                <p>标准篮球场，适合个人和团队使用</p>
+            </div>
+            <div class="facility-card">
+                <h3>羽毛球场</h3>
+                <p>室内羽毛球场，提供专业场地</p>
+            </div>
+            <div class="facility-card">
+                <h3>健身房</h3>
+                <p>配备先进器材的健身区域</p>
+            </div>
+        </div>
+
+        <div class="booking-form">
+            <h2>预约时间</h2>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="facility">选择设施:</label>
+                    <select id="facility" required>
+                        <option value="">请选择</option>
+                        <option value="basketball">篮球场</option>
+                        <option value="badminton">羽毛球场</option>
+                        <option value="gym">健身房</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="court">选择场地编号:</label>
+                    <select id="court" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">选择日期:</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time">选择时间:</label>
+                    <select id="time" required>
+                        <option value="">请选择</option>
+                        <option value="morning">上午 8:00 - 12:00</option>
+                        <option value="afternoon">下午 13:00 - 17:00</option>
+                        <option value="evening">晚上 18:00 - 22:00</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">提交预约</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        欢迎！请进行预约。
+    </div>
+
+    <script>
+        // 显示登录或注册页面
+        function showLogin() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'block';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+
+        // 用户注册
+        function register() {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('密码不一致，请重新输入');
+                return;
+            }
+
+            if (localStorage.getItem(username)) {
+                alert('用户名已存在，请选择其他用户名');
+                return;
+            }
+
+            localStorage.setItem(username, password);
+            alert('注册成功！请登录');
+            document.getElementById('registerForm').reset();
+            showLogin();
+        }
+
+        // 用户登录
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!localStorage.getItem(username) || localStorage.getItem(username) !== password) {
+                alert('用户名或密码错误');
+                return;
+            }
+
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'block';
+        }
+
+        // 预约表单提交
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('预约成功！感谢您的选择。');
+            this.reset();
+        });
+
+        // 动态显示场地编号
+        document.getElementById('facility').addEventListener('change', function() {
+            const courtSelect = document.getElementById('court');
+            courtSelect.innerHTML = '<option value="">请选择</option>';
+            
+            if (this.value === 'badminton') {
+                for (let i = 1; i <= 8; i++) {
+                    courtSelect.innerHTML += `<option value="${i}">${i}号场地</option>`;
+                }
+            } else if (this.value === 'basketball') {
+                for (let i = 1; i <= 6; i++) {
+                    courtSelect.innerHTML += `<option value="${i}">${i}号场地</option>`;
+                }
+            } else if (this.value === 'gym') {
+                courtSelect.innerHTML += '<option value="1">唯一场地</option>';
+            }
+        });
+    </script>
+</body>
+</html>
