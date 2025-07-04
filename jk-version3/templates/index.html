@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体育馆预约系统</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="/static/js/main.js" defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo-container">
+            <img src="/static/images/logo.png" alt="Logo" class="logo">
+            <h1>体育馆预约系统</h1>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link" onclick="showLogin()">登录</a>
+            <a href="#" class="nav-link" onclick="showRegister()">注册</a>
+        </div>
+    </nav>
+
+    <div class="login-container" id="loginContainer" style="display: block;">
+        <div class="auth-section" id="loginSection">
+            <h2>用户登录</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">用户名:</label>
+                    <input type="text" id="loginUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码:</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn">登录</button>
+            </form>
+        </div>
+
+        <div class="auth-section" id="registerSection" style="display: none;">
+            <h2>用户注册</h2>
+            <form class="login-form" id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">用户名:</label>
+                    <input type="text" id="regUsername" name="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密码:</label>
+                    <input type="password" id="regPassword" name="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">确认密码:</label>
+                    <input type="password" id="regConfirmPassword" name="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn">注册</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 个人中心 -->
+    <div class="user-center" id="userCenter" style="display: none;">
+        <h2>个人中心</h2>
+        <div class="user-info">
+            <p>用户名: <span id="displayUsername"></span></p>
+            <button class="btn" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="facilities-carousel">
+            <h2>可用设施</h2>
+            <div id="facilitiesList">
+                <!-- 动态加载设施列表 -->
+            </div>
+        </div>
+
+        <div class="booking-form">
+            <h2>预约时间</h2>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="facility">选择设施:</label>
+                    <select id="facility" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="court">选择场地编号:</label>
+                    <select id="court" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">选择日期:</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeSlot">选择时间段:</label>
+                    <div id="timeSlots">
+                        <!-- 动态加载时间段 -->
+                    </div>
+                    <input type="hidden" id="selectedTime" name="selectedTime" required>
+                </div>
+
+                <button type="submit" class="btn">提交预约</button>
+                <div id="timeSlotError" style="color: red; margin-top: 0.5rem; display: none;">
+                    请选择一个时间段
+                </div>
+            </form>
+        </div>
+
+        <div class="booking-history" style="margin-top: 2rem;">
+            <h2>我的预约记录</h2>
+            <div id="bookingsList">
+                <!-- 动态加载预约记录 -->
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        欢迎！请进行预约。
+    </div>
+
+</body>
+</html>

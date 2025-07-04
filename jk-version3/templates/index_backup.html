@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体育馆预约系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .login-container {
+            display: none;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .login-form {
+            margin-bottom: 2rem;
+        }
+
+        .auth-section {
+            margin-bottom: 2rem;
+        }
+
+        .auth-section h2 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .nav-link {
+            display: inline-block;
+            margin-left: 1rem;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            background-color: #007bff;
+            padding: 1rem;
+            color: white;
+        }
+
+        .navbar h1 {
+            margin-left: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .facilities-carousel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .facility-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .facility-card h3 {
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+
+        .facility-card p {
+            color: #666;
+        }
+
+        .booking-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .navbar h1 {
+                margin-left: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>体育馆预约系统</h1>
+        <a href="#" class="nav-link" onclick="showLogin()">登录</a>
+        <a href="#" class="nav-link" onclick="showRegister()">注册</a>
+    </nav>
+
+    <div class="login-container" id="loginContainer">
+        <div class="auth-section" id="loginSection">
+            <h2>用户登录</h2>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn" onclick="login()">登录</button>
+            </form>
+        </div>
+
+        <div class="auth-section" id="registerSection" style="display: none;">
+            <h2>用户注册</h2>
+            <form class="login-form" id="registerForm">
+                <div class="form-group">
+                    <label for="newUsername">用户名:</label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">密码:</label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码:</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <button type="submit" class="btn" onclick="register()">注册</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 个人中心 -->
+    <div class="user-center" id="userCenter" style="display: none;">
+        <h2>个人中心</h2>
+        <div class="user-info">
+            <p>用户名: <span id="displayUsername"></span></p>
+            <button class="btn" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="facilities-carousel">
+            <h2>可用设施</h2>
+            <div id="facilitiesList">
+                <!-- 动态加载设施列表 -->
+            </div>
+        </div>
+
+        <div class="booking-form">
+            <h2>预约时间</h2>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label for="facility">选择设施:</label>
+                    <select id="facility" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="court">选择场地编号:</label>
+                    <select id="court" required>
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">选择日期:</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeSlot">选择时间段:</label>
+                    <div id="timeSlots">
+                        <!-- 动态加载时间段 -->
+                    </div>
+                    <input type="hidden" id="selectedTime" name="selectedTime" required>
+                </div>
+
+                <button type="submit" class="btn">提交预约</button>
+                <div id="timeSlotError" style="color: red; margin-top: 0.5rem; display: none;">
+                    请选择一个时间段
+                </div>
+            </form>
+        </div>
+
+        <div class="booking-history" style="margin-top: 2rem;">
+            <h2>我的预约记录</h2>
+            <div id="bookingsList">
+                <!-- 动态加载预约记录 -->
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        欢迎！请进行预约。
+    </div>
+
+    <script>
+        // 配置API基础URL
+        const API_BASE_URL = 'http://127.0.0.1:5000'; // 使用固定本地开发地址
+        console.log('API Base URL:', API_BASE_URL); // 添加调试日志
+        
+        // 显示登录或注册页面
+        function showLogin() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'block';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').style.display = 'none';
+        }
+
+        let currentUser = null;
+
+        // 用户注册
+        async function register() {
+            const username = document.getElementById('newUsername').value;
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('密码不一致，请重新输入');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: `${username}@example.com`,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('注册成功！请登录');
+                    document.getElementById('registerForm').reset();
+                    showLogin();
+                } else {
+                    alert(data.error || '注册失败');
+                }
+            } catch (error) {
+                alert('网络错误，请稍后重试');
+            }
+        }
+
+        // 用户登录
+        // 检查本地存储中的登录状态（带安全验证）
+        async function checkLoginStatus() {
+            const userData = localStorage.getItem('currentUser');
+            if (!userData) return;
+            
+            try {
+                // 验证token有效性
+                const response = await fetch(`${API_BASE_URL}/api/users/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: userData
+                });
+                
+                if (response.ok) {
+                    currentUser = JSON.parse(userData);
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'block';
+                    document.getElementById('successMessage').style.display = 'block';
+                    loadFacilities();
+                    loadUserBookings();
+                } else {
+                    // token无效则清除本地存储
+                    localStorage.removeItem('currentUser');
+                }
+            } catch (error) {
+                console.error('验证登录状态失败:', error);
+            }
+        }
+
+        // 强制登录验证
+        document.addEventListener('DOMContentLoaded', function() {
+            const userData = localStorage.getItem('currentUser');
+            if (!userData) {
+                showLogin();
+                return;
+            }
+            
+            // 验证token有效性
+            fetch(`${API_BASE_URL}/api/users/verify`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: userData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    showLogin();
+                    localStorage.removeItem('currentUser');
+                } else {
+                    currentUser = JSON.parse(userData);
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('userCenter').style.display = 'block';
+                    document.getElementById('mainContainer').style.display = 'block';
+                    document.getElementById('displayUsername').textContent = currentUser.username;
+                    loadFacilities();
+                    loadUserBookings();
+                }
+            })
+            .catch(() => {
+                showLogin();
+                localStorage.removeItem('currentUser');
+            });
+        });
+
+        // 强制登录检查
+        function checkAuth() {
+            if (!currentUser) {
+                showLogin();
+                return false;
+            }
+            return true;
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('请输入用户名和密码');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: `${username}@example.com`,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    currentUser = data;
+                    // 保存登录状态到本地存储
+                    localStorage.setItem('currentUser', JSON.stringify(data));
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('userCenter').style.display = 'block';
+                    document.getElementById('mainContainer').style.display = 'block';
+                    document.getElementById('displayUsername').textContent = data.username;
+                    document.getElementById('successMessage').style.display = 'block';
+                    loadFacilities();
+                    loadUserBookings();
+                    // 强制刷新时间段显示
+                    loadTimeSlots();
+                } else {
+                    alert(data.error || '登录失败');
+                }
+            } catch (error) {
+                alert('网络错误，请稍后重试');
+            }
+        }
+
+        // 加载设施列表
+        async function loadFacilities() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/venues`);
+                const facilities = await response.json();
+                
+                const facilitiesList = document.getElementById('facilitiesList');
+                const facilitySelect = document.getElementById('facility');
+                
+                facilitiesList.innerHTML = '';
+                facilitySelect.innerHTML = '<option value="">请选择</option>';
+                
+                facilities.forEach(facility => {
+                    // 添加设施卡片
+                    facilitiesList.innerHTML += `
+                        <div class="facility-card" data-id="${facility.id}">
+                            <h3>${facility.name}</h3>
+                            <p>${facility.description}</p>
+                            <p>价格: ¥${facility.price_per_hour}/小时</p>
+                            <p>状态: ${facility.status}</p>
+                        </div>
+                    `;
+                    
+                    // 添加设施选择项
+                    facilitySelect.innerHTML += `
+                        <option value="${facility.id}">${facility.name}</option>
+                    `;
+                });
+            } catch (error) {
+                console.error('加载设施失败:', error);
+            }
+        }
+
+        // 加载用户预约记录
+        async function loadUserBookings() {
+            if (!currentUser) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/bookings?user_id=${currentUser.user_id}`);
+                const bookings = await response.json();
+                
+                const bookingsList = document.getElementById('bookingsList');
+                bookingsList.innerHTML = '';
+                
+                if (bookings.length === 0) {
+                    bookingsList.innerHTML = '<p>暂无预约记录</p>';
+                    return;
+                }
+                
+                bookings.forEach(booking => {
+                    bookingsList.innerHTML += `
+                        <div class="booking-card" style="background-color: white; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                            <h4>预约编号: ${booking.booking_number}</h4>
+                            <p>设施: ${booking.venue.name} (${booking.venue.type})</p>
+                            <p>日期: ${booking.date}</p>
+                            <p>时间: ${booking.start_time} - ${booking.end_time}</p>
+                            <p>状态: ${booking.status}</p>
+                            <p>价格: ¥${booking.price}</p>
+                            <button onclick="cancelBooking('${booking.id}')" class="btn" style="background-color: #dc3545;">取消预约</button>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error('加载预约记录失败:', error);
+            }
+        }
+
+        // 取消预约
+        async function cancelBooking(bookingId) {
+            if (!confirm('确定要取消此预约吗？')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    alert(data.message);
+                    loadUserBookings();
+                } else {
+                    alert(data.error || '取消预约失败');
+                }
+            } catch (error) {
+                alert('网络错误，请稍后重试');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            document.getElementById('userCenter').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('loginForm').reset();
+        }
+
+        // 增强版时间段选择
+        async function loadTimeSlots() {
+            console.log('loadTimeSlots called'); // Debug
+            if (!checkAuth()) {
+                console.log('Not authenticated');
+                return;
+            }
+            
+            // 确保已选择日期和设施
+            const selectedDate = document.getElementById('date').value;
+            if (!selectedDate) {
+                console.log('No date selected');
+                alert('请先选择预约日期');
+                return;
+            }
+            const facilityId = document.getElementById('facility').value
