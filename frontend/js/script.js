@@ -16,7 +16,7 @@ if (loginForm) {
         } else {
             // 调用真实登录API
             e.preventDefault();
-            fetch('/api/auth/login', {
+            fetch('/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -83,17 +83,17 @@ if (registerForm) {
 
         // 调用真实注册API
         e.preventDefault();
-        fetch('/api/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username,
-                password: password,
-                phone: phone
+            fetch('/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    phone: phone
+                })
             })
-        })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => { throw err; });

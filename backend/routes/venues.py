@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
-from models import Venue
-from extensions import db
+from ..models import Venue
+from ..extensions import db
 
 venues_bp = Blueprint('venues', __name__)
 

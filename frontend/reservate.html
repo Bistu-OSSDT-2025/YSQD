@@ -285,12 +285,46 @@
                 this.innerHTML = `<span class="spinner"></span> 加载中...`;
                 this.disabled = true;
                 
-                // Simulate API call
-                setTimeout(() => {
+                // Get venue type from card
+                const venueCard = this.closest('.venue-card');
+                const venueType = venueCard.querySelector('h3').textContent.includes('羽毛球') ? 'badminton' : 'gym';
+                
+                // Get current user token
+                const token = sessionStorage.getItem('access_token');
+                if (!token) {
+                    alert('请先登录');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Call actual reservation API
+                fetch('/api/reservations/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        venue_id: venueType === 'badminton' ? 1 : 2, // Hardcoded IDs for demo
+                        start_time: new Date().toISOString(), // Current time for demo
+                        end_time: new Date(Date.now() + 3600000).toISOString() // 1 hour later
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert('预约成功！');
+                    window.location.href = 'profile.html';
+                })
+                .catch(error => {
+                    alert(error.error || '预约失败');
                     this.textContent = originalText;
                     this.disabled = false;
-                    window.location.href = this.closest('.venue-card').onclick.toString().match(/location\.href='([^']+)'/)[1];
-                }, 1000);
+                });
             });
         });
         

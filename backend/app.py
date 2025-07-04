@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from extensions import db, migrate, jwt
+from backend.extensions import db, migrate, jwt
 import os
 
 def create_app():
@@ -18,14 +18,14 @@ def create_app():
     jwt.init_app(app)
 
     # 导入路由
-    from routes.auth import auth_bp
-    from routes.venues import venues_bp
-    from routes.reservations import reservations_bp
+    from backend.routes.auth import auth_bp
+    from backend.routes.venues import venues_bp
+    from backend.routes.reservations import reservations_bp
 
     # 注册蓝图
-    app.register_blueprint(auth_bp, url_prefix='/api/auth')
-    app.register_blueprint(venues_bp, url_prefix='/api/venues')
-    app.register_blueprint(reservations_bp, url_prefix='/api/reservations')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(venues_bp, url_prefix='/venues')
+    app.register_blueprint(reservations_bp, url_prefix='/reservations')
 
     @app.route('/')
     def hello():
